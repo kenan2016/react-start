@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 //import logo from './logo.svg';
 //import './App.css';
 import TodoItem from './TodoItem'
-
+// 引入第三方的ajax 工具 axios
+import axios from 'axios'
 class TodoList extends Component {
   constructor(props) {
     super(props)
@@ -10,6 +11,16 @@ class TodoList extends Component {
       List:['learn english', 'learn react'],
       inputVal:''
     }
+    // 或者这么写：已提高代码性能
+    // this.handleinputChange = this.handleinputChange.bind(this) 或者在组件里使用箭头函数
+  }
+
+  componentDidMount() {
+    axios.get('/api/products').then(() => {
+      alert('success')
+    }).catch(() => {cls
+      alert('error')
+    })
   }
   handleBtnClick() {
     this.setState({
@@ -17,7 +28,6 @@ class TodoList extends Component {
       List:[...this.state.List, this.state.inputVal],
       inputVal:''
     })
-
   }
   handleinputChange(event) {
     this.setState({
@@ -45,26 +55,35 @@ class TodoList extends Component {
       List
     })
   }
+  getToDoListItems() {
+    return this.state.List.map((item, index) => {
+      // 通过content 向 item组件传递参数
+      // 即：父组件通过属性的形式向子组件传递参数
+      // handleDel={this.handleDelete.bind(this)} 用来子组件和父组件进行通信
+      // 同时在父组件创建handleDelete 方法
+      // handleDel 要传给子组件里实现
+      return (
+        <TodoItem 
+          handleDel={this.handleDeleteCurItem.bind(this)} 
+          key={index} 
+          content={item} 
+          index={index}/>
+      )
+    //  return <li key={index} onClick={this.handleItemClick.bind(this, index)}>{item}</li> 
+    })
+  }
   render() {
     return (
-      <div>
+      <Fragment>
         <div>
           <input onChange={this.handleinputChange.bind(this)} value={this.state.inputVal}></input>
           {/* 注意这里的如果不写bind(this)则说明 函数会直接指向被点击的按钮！   */}
-          <button onClick={this.handleBtnClick.bind(this)}>add</button>
+          <button className='styl-btn' onClick={this.handleBtnClick.bind(this)} style={{background: 'orange', fontSize: 18}}>add</button>
         </div>
         <ul>
-          {this.state.List.map((item, index) => {
-            // 通过content 向 item组件传递参数
-            // 即：父组件通过属性的形式向子组件传递参数
-            // handleDel={this.handleDelete.bind(this)} 用来子组件和父组件进行通信
-            // 同时在父组件创建handleDelete 方法
-            // handleDel 要传给子组件里实现
-            return <TodoItem handleDel={this.handleDeleteCurItem.bind(this)} key={index} content={item} index={index}/>
-          //  return <li key={index} onClick={this.handleItemClick.bind(this, index)}>{item}</li> 
-          })}
+          {this.getToDoListItems()}
         </ul>
-      </div>
+      </Fragment>
     );
   }
 }

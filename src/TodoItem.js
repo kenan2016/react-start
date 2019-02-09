@@ -14,6 +14,7 @@ class TodoItem extends React.Component{
         // 回传后，父组件里handleDel的就能接收到回传的index 参数
     }
     render() {
+        const { content } = this.props // ES6解构赋值 等价于const content = {content:this.props}
         return (
             <div onClick={this.handleDelete.bind(this)}>
                 {/* 子组件通过 props属性获取父组件传递过来的参数 */}
